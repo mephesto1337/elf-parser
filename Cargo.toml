@@ -1,0 +1,18 @@
+[package]
+name = "elf"
+version = "0.1.0"
+authors = ["Thomas WACHE <thomas@wache.fr>"]
+
+[lib]
+name = "elf"
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+#nom = "4.0.0-beta3"
+enum_primitive = "^0.1"
+clap = "~2.27"
+failure = "^0.1"
+
+[dependencies.nom]
+version = "4.0.0-beta3"
+features = ["verbose-errors"]

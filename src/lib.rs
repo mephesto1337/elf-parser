@@ -13,6 +13,9 @@ extern crate libc;
 pub mod header;
 pub use header::*;
 
+pub mod elf32;
+pub use elf32::*;
+
 pub mod elf64;
 pub use elf64::*;
 

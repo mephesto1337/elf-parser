@@ -1,7 +1,7 @@
 use nom;
 
-pub mod types;
-pub use types::*;
+pub mod types64;
+pub use types64::*;
 
 #[derive(Debug)]
 pub struct Elf64 {

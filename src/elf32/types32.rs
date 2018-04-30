@@ -6,8 +6,8 @@ use header::{ElfIdent, parse_elf_ident};
 type Elf32Half  = u16;
 type Elf32Word  = u32;
 type Elf32Xword = u64;
-type Elf32Addr  = u64;
-type Elf32Off   = u64;
+type Elf32Addr  = u32;
+type Elf32Off   = u32;
 
 #[derive(Debug,PartialEq)]
 pub struct Elf32Header {
@@ -31,26 +31,26 @@ pub struct Elf32Header {
 pub struct Elf32Section {
     pub sh_name:        Elf32Word,
     pub sh_type:        Elf32Word,
-    pub sh_flags:       Elf32Xword,
+    pub sh_flags:       Elf32Word,
     pub sh_addr:        Elf32Addr,
     pub sh_offset:      Elf32Off,
-    pub sh_size:        Elf32Xword,
+    pub sh_size:        Elf32Word,
     pub sh_link:        Elf32Word,
     pub sh_info:        Elf32Word,
-    pub sh_addralign:   Elf32Xword,
-    pub sh_entsize:     Elf32Xword,
+    pub sh_addralign:   Elf32Word,
+    pub sh_entsize:     Elf32Word,
 }
 
 #[derive(Debug,PartialEq)]
 pub struct Elf32Segment {
     pub p_type:     Elf32Word,
-    pub p_flags:    Elf32Word,
     pub p_offset:   Elf32Off,
     pub p_vaddr:    Elf32Addr,
     pub p_paddr:    Elf32Addr,
-    pub p_filesz:   Elf32Xword,
-    pub p_memsz:    Elf32Xword,
-    pub p_align:    Elf32Xword,
+    pub p_filesz:   Elf32Word,
+    pub p_memsz:    Elf32Word,
+    pub p_flags:    Elf32Word,
+    pub p_align:    Elf32Word,
 }
 
 #[inline(always)]
@@ -70,12 +70,12 @@ pub fn parse_elf32_xword(i: &[u8]) -> nom::IResult<&[u8], Elf32Xword> {
 
 #[inline(always)]
 pub fn parse_elf32_addr(i: &[u8]) -> nom::IResult<&[u8], Elf32Addr> {
-    nom::le_u64(i)
+    nom::le_u32(i)
 }
 
 #[inline(always)]
 pub fn parse_elf32_off(i: &[u8]) -> nom::IResult<&[u8], Elf32Off> {
-    nom::le_u64(i)
+    nom::le_u32(i)
 }
 
 
@@ -141,21 +141,21 @@ pub fn parse_elf32_header(i: &[u8]) -> nom::IResult<&[u8], Elf32Header> {
 named!(pub parse_elf32_segment<Elf32Segment>,
     do_parse!(
             _p_type:    parse_elf32_word
-        >>  _p_flags:   parse_elf32_word
         >>  _p_offset:  parse_elf32_off
         >>  _p_vaddr:   parse_elf32_addr
         >>  _p_paddr:   parse_elf32_addr
-        >>  _p_filesz:  parse_elf32_xword
-        >>  _p_memsz:   parse_elf32_xword
-        >>  _p_align:   parse_elf32_xword
+        >>  _p_filesz:  parse_elf32_word
+        >>  _p_memsz:   parse_elf32_word
+        >>  _p_flags:   parse_elf32_word
+        >>  _p_align:   parse_elf32_word
         >>  ( Elf32Segment {
             p_type:     _p_type,
-            p_flags:    _p_flags,
             p_offset:   _p_offset,
             p_vaddr:    _p_vaddr,
             p_paddr:    _p_paddr,
             p_filesz:   _p_filesz,
             p_memsz:    _p_memsz,
+            p_flags:    _p_flags,
             p_align:    _p_align,
         })
     )
@@ -165,14 +165,14 @@ named!(pub parse_elf32_section<Elf32Section>,
     do_parse!(
             _sh_name:       parse_elf32_word
         >>  _sh_type:       parse_elf32_word
-        >>  _sh_flags:      parse_elf32_xword
+        >>  _sh_flags:      parse_elf32_word
         >>  _sh_addr:       parse_elf32_addr
         >>  _sh_offset:     parse_elf32_off
-        >>  _sh_size:       parse_elf32_xword
+        >>  _sh_size:       parse_elf32_word
         >>  _sh_link:       parse_elf32_word
         >>  _sh_info:       parse_elf32_word
-        >>  _sh_addralign:  parse_elf32_xword
-        >>  _sh_entsize:    parse_elf32_xword
+        >>  _sh_addralign:  parse_elf32_word
+        >>  _sh_entsize:    parse_elf32_word
         >>  ( Elf32Section {
             sh_name:       _sh_name,
             sh_type:       _sh_type,

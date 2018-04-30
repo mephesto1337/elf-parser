@@ -35,7 +35,7 @@ impl From<clap::Error> for Error {
 
 
 fn run() -> Result<(), Error> {
-    let args = App::new("readelf")
+    let args = App::new("dumpelf")
         .version("1.0")
         .author("Thomas WACHE")
         .arg(
@@ -49,14 +49,18 @@ fn run() -> Result<(), Error> {
 
         println!("Loaded {} bytes from {}", elffilesize, elffilename);
 
-        println!("sizeof(ElfIdent) = {}", ::std::mem::size_of::<ElfIdent>());
-        match parse_elf64(buf.as_slice()) {
-            Ok((_rest, elf64)) => {
-                println!("ELF = {:#?}", elf64);
-                Ok(())
+        let (_, hdr) = parse_elf_ident(&buf.as_slice()).unwrap();
+        match hdr.class {
+            ElfClass::Class32 => {
+                let (_, elf32) = parse_elf32(&buf.as_slice()).unwrap();
+                println!("ELF32 = {:#?}", elf32);
             },
-            Err(e) => Err(Error::ParseError(format!("{:?}", e.into_error_kind()))),
+            ElfClass::Class64 => {
+                let (_, elf64) = parse_elf64(&buf.as_slice()).unwrap();
+                println!("ELF64 = {:#?}", elf64);
+            }
         }
+        Ok(())
     } else {
         Err(Error::ArgsError(clap::Error {
             message:    String::from("elf argument must be privided"),

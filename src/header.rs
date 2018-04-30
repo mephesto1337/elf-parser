@@ -5,7 +5,7 @@ use enum_primitive::FromPrimitive;
 enum_from_primitive! {
 #[derive(Debug,PartialEq)]
 #[repr(u8)]
-enum ElfClass {
+pub enum ElfClass {
     Class32 = 1,
     Class64 = 2,
 }
@@ -14,7 +14,7 @@ enum ElfClass {
 enum_from_primitive! {
 #[derive(Debug,PartialEq)]
 #[repr(u8)]
-enum ElfData {
+pub enum ElfData {
     DataLSB = 1,
     DataMSB = 2,
 }
@@ -23,7 +23,7 @@ enum ElfData {
 enum_from_primitive! {
 #[derive(Debug,PartialEq)]
 #[repr(u8)]
-enum ElfOSAbi {
+pub enum ElfOSAbi {
     OSAbiSysv= 0,
     OSAbiHpux= 1,
     OSAbiNetbsd= 2,
@@ -44,7 +44,7 @@ enum ElfOSAbi {
 enum_from_primitive! {
 #[derive(Debug,PartialEq)]
 #[repr(u16)]
-enum ElfType {
+pub enum ElfType {
     None= 0,
     Rel= 1,
     Exec= 2,
@@ -61,7 +61,7 @@ enum ElfType {
 enum_from_primitive! {
 #[derive(Debug,PartialEq)]
 #[repr(u16)]
-enum ElfMachine {
+pub enum ElfMachine {
     MachineNone = 0,
     MachineM32 = 1,
     MachineSparc = 2,
@@ -248,19 +248,19 @@ enum ElfMachine {
 enum_from_primitive! {
 #[derive(Debug,PartialEq)]
 #[repr(u16)]
-enum ElfVersion {
+pub enum ElfVersion {
     Current = 1,
 }
 }
 
 #[derive(Debug,PartialEq)]
 pub struct ElfIdent {
-    tag:        [u8; 4],
-    class:      ElfClass,
-    data:       ElfData,
-    version:    ElfVersion,
-    osabi:      ElfOSAbi,
-    padding:    [u8; 7],
+    pub tag:        [u8; 4],
+    pub class:      ElfClass,
+    pub data:       ElfData,
+    pub version:    ElfVersion,
+    pub osabi:      ElfOSAbi,
+    pub padding:    [u8; 7],
 }
 
 pub fn le_u8(i:&[u8]) -> nom::IResult<&[u8], u8> {

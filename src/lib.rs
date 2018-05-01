@@ -6,6 +6,8 @@ extern crate nom;
 
 extern crate libc;
 
+extern crate exe;
+
 
 #[allow(dead_code)]
 #[allow(unused_macros)]

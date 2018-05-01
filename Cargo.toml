@@ -8,7 +8,6 @@ name = "elf"
 crate-type = ["staticlib", "rlib"]
 
 [dependencies]
-#nom = "4.0.0-beta3"
 enum_primitive = "^0.1"
 clap = "~2.27"
 failure = "^0.1"

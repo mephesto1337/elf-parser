@@ -5,13 +5,14 @@ pub mod types64;
 pub use types64::*;
 
 #[derive(Debug)]
-pub struct Elf64 {
+pub struct Elf64<'a> {
+    pub data:       &'a [u8],
     pub header:     Elf64Header,
     pub segments:   Vec<Elf64Segment>,
     pub sections:   Vec<Elf64Section>,
 }
 
-pub fn parse_elf64(i: &[u8]) -> nom::IResult<&[u8], Elf64> {
+pub fn parse_elf64<'a>(i: &'a [u8]) -> nom::IResult<&'a [u8], Elf64<'a>> {
     let header = parse_elf64_header(i)?.1;
     let ph_off = header.e_phoff as usize;
     let sh_off = header.e_shoff as usize;
@@ -20,6 +21,7 @@ pub fn parse_elf64(i: &[u8]) -> nom::IResult<&[u8], Elf64> {
     let rest = if segments.0.len() > sections.0.len() { sections.0 } else { segments.0 };
 
     Ok((rest, Elf64 {
+        data:       i,
         header:     header,
         segments:   segments.1,
         sections:   sections.1
@@ -52,7 +54,7 @@ impl exe::Section for Elf64Section {
     }
 }
 
-impl exe::Exe for Elf64 {
+impl<'a> exe::Exe<'a> for Elf64<'a> {
     type Item = Elf64Section;
 
     fn get_number_of_sections(&self) -> usize {
@@ -61,5 +63,16 @@ impl exe::Exe for Elf64 {
 
     fn get_section_at(&self, idx: usize) -> Option<&Self::Item> {
         self.sections.iter().nth(idx)
+    }
+
+    fn parse(i: &'a [u8]) -> Option<Self> {
+        match parse_elf64(i) {
+            Ok((_, e)) => Some(e),
+            Err(_) => None
+        }
+    }
+
+    fn get_data(&self, start: usize, len: usize) -> & [u8] {
+        &self.data[start .. (start + len)]
     }
 }

@@ -78,7 +78,10 @@ impl<'a> exe::Exe<'a> for Elf64<'a> {
         };
 
         let off = s.sh_name as usize + strndx.sh_offset as usize;
-        ::std::str::from_utf8(&self.data[off..]).ok()
+        match self.data[off..].iter().enumerate().filter(|(_, &c)| c == 0).map(|(i, _)| i).nth(0) {
+            Some(size) => ::std::str::from_utf8(&self.data[off..off + size]).ok(),
+            None => None
+        }
     }
 
     fn parse(i: &'a [u8]) -> Option<Self> {

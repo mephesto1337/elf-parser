@@ -103,10 +103,7 @@ pub extern fn rs_elf64_parse<'a>(i: *const uint8_t, len: size_t) -> *const c_voi
 
     match parse_elf64(buf) {
         Ok((_, e64)) => Box::into_raw(Box::new(e64)) as *const c_void,
-        Err(e) => {
-            eprintln!("{:?}", e.into_error_kind());
-            ::std::ptr::null::<c_void>()   
-        }
+        Err(_) => ::std::ptr::null::<c_void>()
     }
 }
 

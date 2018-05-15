@@ -103,10 +103,7 @@ pub extern fn rs_elf32_parse<'a>(i: *const uint8_t, len: size_t) -> *const c_voi
 
     match parse_elf32(buf) {
         Ok((_, e32)) => Box::into_raw(Box::new(e32)) as *const c_void,
-        Err(e) => {
-            eprintln!("{:?}", e.into_error_kind());
-            ::std::ptr::null::<c_void>()   
-        }
+        Err(_) => ::std::ptr::null::<c_void>()
     }
 }
 

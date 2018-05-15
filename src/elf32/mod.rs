@@ -4,6 +4,8 @@ use exe;
 pub mod types32;
 pub use types32::*;
 
+use libc::{size_t, uint8_t, c_void};
+
 #[derive(Debug)]
 pub struct Elf32<'a> {
     pub data:       &'a [u8],
@@ -65,6 +67,21 @@ impl<'a> exe::Exe<'a> for Elf32<'a> {
         self.sections.iter().nth(idx)
     }
 
+    fn get_section_name_at(&self, idx: usize) -> Option<&str> {
+        let strndx = match self.sections.iter().nth(self.header.e_shstrndx as usize) {
+            Some(s) => s,
+            None => { return None; }
+        };
+        let s = match self.sections.iter().nth(idx) {
+            Some(x) => x,
+            None => { return None; }
+        };
+
+        let off = s.sh_name as usize + strndx.sh_offset as usize;
+        ::std::str::from_utf8(&self.data[off..]).ok()
+    }
+
+
     fn parse(i: &'a [u8]) -> Option<Self> {
         match parse_elf32(i) {
             Ok((_, e)) => Some(e),
@@ -76,3 +93,27 @@ impl<'a> exe::Exe<'a> for Elf32<'a> {
         &self.data[start .. (start + len)]
     }
 }
+
+#[no_mangle]
+pub extern fn rs_elf32_parse<'a>(i: *const uint8_t, len: size_t) -> *const c_void {
+    let buf = unsafe { ::std::slice::from_raw_parts(i as *const u8, len) };
+
+    match parse_elf32(buf) {
+        Ok((_, e32)) => Box::into_raw(Box::new(e32)) as *const c_void,
+        Err(e) => {
+            eprintln!("{:?}", e.into_error_kind());
+            ::std::ptr::null::<c_void>()   
+        }
+    }
+}
+
+generate_c_api!(Elf32Section, Elf32<'a>,
+    rs_elf32_get_flags,
+    rs_elf32_get_offset,
+    rs_elf32_get_size,
+    rs_elf32_get_number_of_sections,
+    rs_elf32_get_section_at,
+    rs_elf32_get_section_name_at,
+    rs_elf32_get_data,
+    rs_elf32_free_exe
+);

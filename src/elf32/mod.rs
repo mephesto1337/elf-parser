@@ -92,6 +92,14 @@ impl<'a> exe::Exe<'a> for Elf32<'a> {
         }
     }
 
+    fn get_info(&self) -> exe::Info {
+        exe::Info {
+            os: String::from("linux"),
+            arch: String::from("x86"),
+            bits: 32usize,
+        }
+    }
+
     fn get_data(&self, start: usize, len: usize) -> & [u8] {
         &self.data[start .. (start + len)]
     }
@@ -107,13 +115,11 @@ pub extern fn rs_elf32_parse<'a>(i: *const uint8_t, len: size_t) -> *const c_voi
     }
 }
 
-generate_c_api!(Elf32Section, Elf32<'a>,
-    rs_elf32_get_flags,
-    rs_elf32_get_offset,
-    rs_elf32_get_size,
+generate_c_api!(Elf32<'a>,
+    rs_elf32_get_info,
     rs_elf32_get_number_of_sections,
     rs_elf32_get_section_at,
-    rs_elf32_get_section_name_at,
     rs_elf32_get_data,
+    rs_elf32_free_section,
     rs_elf32_free_exe
 );

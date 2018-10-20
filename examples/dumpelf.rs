@@ -1,6 +1,7 @@
 extern crate clap;
 extern crate elf;
-#[macro_use] extern crate failure;
+#[macro_use]
+extern crate failure;
 extern crate nom;
 
 use clap::{App, Arg};
@@ -33,14 +34,11 @@ impl From<clap::Error> for Error {
     }
 }
 
-
 fn run() -> Result<(), Error> {
     let args = App::new("dumpelf")
         .version("1.0")
         .author("Thomas WACHE")
-        .arg(
-            Arg::with_name("elf").index(1)
-        )
+        .arg(Arg::with_name("elf").index(1))
         .get_matches_safe()?;
     if let Some(elffilename) = args.value_of("elf") {
         let mut buf: Vec<u8> = Vec::new();
@@ -49,12 +47,13 @@ fn run() -> Result<(), Error> {
 
         println!("Loaded {} bytes from {}", elffilesize, elffilename);
 
-        let (_, hdr) = parse_elf_ident(&buf.as_slice()).unwrap();
+        let (_, hdr) =
+            parse_elf_ident(&buf.as_slice()).map_err(|e| Error::ParseError(format!("{:?}", e)))?;
         match hdr.class {
             ElfClass::Class32 => {
                 let (_, elf32) = parse_elf32(&buf.as_slice()).unwrap();
                 println!("ELF32 = {:#?}", elf32);
-            },
+            }
             ElfClass::Class64 => {
                 let (_, elf64) = parse_elf64(&buf.as_slice()).unwrap();
                 println!("ELF64 = {:#?}", elf64);
@@ -63,16 +62,16 @@ fn run() -> Result<(), Error> {
         Ok(())
     } else {
         Err(Error::ArgsError(clap::Error {
-            message:    String::from("elf argument must be privided"),
-            kind:       clap::ErrorKind::EmptyValue,
-            info:       None
+            message: String::from("elf argument must be privided"),
+            kind: clap::ErrorKind::EmptyValue,
+            info: None,
         }))
     }
 }
 
 fn main() {
     match run() {
-        Ok(()) => {},
-        Err(e) => println!("{}", e)
+        Ok(()) => {}
+        Err(e) => println!("{}", e),
     }
 }

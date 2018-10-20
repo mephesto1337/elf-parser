@@ -1,6 +1,5 @@
-use nom;
 use enum_primitive::FromPrimitive;
-
+use nom;
 
 enum_from_primitive! {
 #[derive(Debug,PartialEq)]
@@ -253,17 +252,17 @@ pub enum ElfVersion {
 }
 }
 
-#[derive(Debug,PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct ElfIdent {
-    pub tag:        [u8; 4],
-    pub class:      ElfClass,
-    pub data:       ElfData,
-    pub version:    ElfVersion,
-    pub osabi:      ElfOSAbi,
-    pub padding:    [u8; 7],
+    pub tag: [u8; 4],
+    pub class: ElfClass,
+    pub data: ElfData,
+    pub version: ElfVersion,
+    pub osabi: ElfOSAbi,
+    pub padding: [u8; 7],
 }
 
-pub fn le_u8(i:&[u8]) -> nom::IResult<&[u8], u8> {
+pub fn le_u8(i: &[u8]) -> nom::IResult<&[u8], u8> {
     if i.len() < 1 {
         Err(nom::Err::Incomplete(nom::Needed::Size(1)))
     } else {
@@ -272,51 +271,45 @@ pub fn le_u8(i:&[u8]) -> nom::IResult<&[u8], u8> {
 }
 
 macro_rules! parse_u8_enum {
-    ($funcname:ident, $enum:ident) => (
+    ($funcname:ident, $enum:ident) => {
         fn $funcname(i: &[u8]) -> nom::IResult<&[u8], $enum> {
             match le_u8(i) {
-                Ok((rest, x)) => {
-                    match $enum::from_u8(x) {
-                        Some(y) => Ok((rest, y)),
-                        None    => Err(nom::Err::Error(error_position!(i, nom::ErrorKind::NoneOf)))
-                    }
+                Ok((rest, x)) => match $enum::from_u8(x) {
+                    Some(y) => Ok((rest, y)),
+                    None => Err(nom::Err::Error(error_position!(i, nom::ErrorKind::NoneOf))),
                 },
-                Err(e) => Err(e)
+                Err(e) => Err(e),
             }
         }
-    )
+    };
 }
 
 macro_rules! parse_u16_enum {
-    ($funcname:ident, $enum:ident) => (
+    ($funcname:ident, $enum:ident) => {
         fn $funcname(i: &[u8]) -> nom::IResult<&[u8], $enum> {
             match nom::le_u16(i) {
-                Ok((rest, x)) => {
-                    match $enum::from_u16(x) {
-                        Some(y) => Ok((rest, y)),
-                        None    => Err(nom::Err::Error(error_position!(i, nom::ErrorKind::NoneOf)))
-                    }
+                Ok((rest, x)) => match $enum::from_u16(x) {
+                    Some(y) => Ok((rest, y)),
+                    None => Err(nom::Err::Error(error_position!(i, nom::ErrorKind::NoneOf))),
                 },
-                Err(e) => Err(e)
+                Err(e) => Err(e),
             }
         }
-    )
+    };
 }
 
 macro_rules! parse_u32_enum {
-    ($funcname:ident, $enum:ident) => (
+    ($funcname:ident, $enum:ident) => {
         fn $funcname(i: &[u8]) -> nom::IResult<&[u8], $enum> {
             match nom::le_u32(i) {
-                Ok((rest, x)) => {
-                    match $enum::from_u32(x) {
-                        Some(y) => Ok((rest, y)),
-                        None    => Err(nom::Err::Error(error_position!(i, nom::ErrorKind::NoneOf)))
-                    }
+                Ok((rest, x)) => match $enum::from_u32(x) {
+                    Some(y) => Ok((rest, y)),
+                    None => Err(nom::Err::Error(error_position!(i, nom::ErrorKind::NoneOf))),
                 },
-                Err(e) => Err(e)
+                Err(e) => Err(e),
             }
         }
-    )
+    };
 }
 
 parse_u8_enum!(parse_elf_class, ElfClass);

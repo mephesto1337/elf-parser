@@ -9,10 +9,8 @@ extern crate exe;
 
 extern crate libc;
 
-
 #[allow(dead_code)]
 #[allow(unused_macros)]
-
 pub mod header;
 pub use header::*;
 

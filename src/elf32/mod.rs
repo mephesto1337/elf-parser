@@ -134,6 +134,7 @@ pub extern "C" fn rs_elf32_parse<'a>(i: *const uint8_t, len: size_t) -> *const c
 generate_c_api!(
     Elf32<'a>,
     rs_elf32_get_info,
+    rs_elf32_free_info,
     rs_elf32_get_number_of_sections,
     rs_elf32_get_section_at,
     rs_elf32_get_data,

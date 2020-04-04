@@ -1,7 +1,8 @@
-use exe;
-use nom;
+// use exe;
 
-pub mod types64;
+pub mod header;
+pub mod section;
+pub mod segment;
 
 // #[derive(Debug)]
 // pub struct Elf64<'a> {

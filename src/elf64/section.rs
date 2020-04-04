@@ -1,11 +1,13 @@
 use bitflags::bitflags;
 use enum_primitive_derive::Primitive;
 use nom::combinator::map_opt;
-use nom::number::complete::le_u64;
+use nom::number::complete::{le_u32, le_u64};
+use nom::sequence::tuple;
 use nom::IResult;
 use num_traits::FromPrimitive;
 
 use crate::parse_u32_enum;
+use crate::types::{parse_addr, Addr};
 
 #[derive(Debug, PartialEq, Primitive)]
 #[repr(u32)]

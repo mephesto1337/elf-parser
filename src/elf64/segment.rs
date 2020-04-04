@@ -1,7 +1,8 @@
 use bitflags::bitflags;
 use enum_primitive_derive::Primitive;
 use nom::combinator::map_opt;
-use nom::number::complete::le_u64;
+use nom::number::complete::{le_u32, le_u64};
+use nom::sequence::tuple;
 use nom::IResult;
 use num_traits::FromPrimitive;
 
@@ -41,17 +42,14 @@ pub enum SegmentType {
     /// Start of OS-specific
     Loos = 0x60000000,
 
-    /// GCC .eh_frame_hdr segment
-    Gnu_eh_frame = 0x6474e550,
+    /// GCC .ehFrameHdr segment
+    GnuEhFrame = 0x6474e550,
 
     /// Indicates stack executability
-    Gnu_stack = 0x6474e551,
+    GnuStack = 0x6474e551,
 
     /// Read-only after relocation
-    Gnu_relro = 0x6474e552,
-
-    ///
-    Losunw = 0x6ffffffa,
+    GnuRelro = 0x6474e552,
 
     /// Sun Specific segment
     Sunwbss = 0x6ffffffa,
@@ -70,15 +68,15 @@ pub enum SegmentType {
 }
 
 bitflags! {
-    pub struct SegmentFlags: u64 {
+    pub struct SegmentFlags: u32 {
         /// Segment is executable
-        const EXECUTE = 1,
+        const EXECUTE = 1;
 
         /// Segment is writable
-        const WRITE = 2,
+        const WRITE = 2;
 
         /// Segment is reable
-        const READ = 4
+        const READ = 4;
     }
 }
 
@@ -103,7 +101,7 @@ fn parse_segment_flags(input: &[u8]) -> IResult<&[u8], SegmentFlags> {
 pub(crate) fn parse_elf64_segment(input: &[u8]) -> IResult<&[u8], Elf64Segment> {
     let (rest, (r#type, flags, offset, vaddr, paddr, filesz, memsz, align)) = tuple((
         parse_segment_type,
-        le_u32,
+        parse_segment_flags,
         le_u64,
         parse_addr,
         parse_addr,

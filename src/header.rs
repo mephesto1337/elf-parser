@@ -36,23 +36,23 @@ pub enum ElfOSAbi {
     Sysv = 0,
     /// HP-UX
     Hpux = 1,
-    /// NetBSD.  
+    /// NetBSD.
     Netbsd = 2,
-    /// Object uses GNU ELF extensions.  
+    /// Object uses GNU ELF extensions.
     Gnu = 3,
-    /// Sun Solaris.  
+    /// Sun Solaris.
     Solaris = 6,
-    /// IBM AIX.  
+    /// IBM AIX.
     Aix = 7,
-    /// SGI Irix.  
+    /// SGI Irix.
     Irix = 8,
-    /// FreeBSD.  
+    /// FreeBSD.
     Freebsd = 9,
-    /// Compaq TRU64 UNIX.  
+    /// Compaq TRU64 UNIX.
     Tru64 = 10,
-    /// Novell Modesto.  
+    /// Novell Modesto.
     Modesto = 11,
-    /// OpenBSD.  
+    /// OpenBSD.
     Openbsd = 12,
     /// ARM EABI
     ArmAeabi = 64,
